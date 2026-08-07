@@ -34,6 +34,7 @@ mac:
 dmg:
   artifactName: 水豚噜噜-${arch}.dmg
   title: 水豚噜噜 安装器
+  background: null
   contents:
     - { x: 130, y: 220 }
     - { x: 410, y: 220, type: link, path: /Applications }
