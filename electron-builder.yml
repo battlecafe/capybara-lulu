@@ -21,23 +21,18 @@ portable:
 
 # ============================================================
 # macOS 配置
+# 使用 zip 格式避免 macOS Tahoe 上 hdiutil/DMG 构建器的 bug
+# (electron-builder v25.x 的 DMG 构建在 macOS 26/Darwin 25.x 上 hdiutil detach 失败)
+# zip 包含 .app 应用包，用户解压后拖入 Applications 即可使用
 # ============================================================
 mac:
   target:
-    - target: dmg
+    - target: zip
       arch: [x64, arm64]
   icon: resources/icon-mac.png
   category: public.app-category.entertainment
   hardenedRuntime: false
   gatekeeperAssess: false
-
-dmg:
-  artifactName: 水豚噜噜-${arch}.dmg
-  title: 水豚噜噜 安装器
-  background: null
-  contents:
-    - { x: 130, y: 220 }
-    - { x: 410, y: 220, type: link, path: /Applications }
 
 # ============================================================
 # 通用配置
