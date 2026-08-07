@@ -1,0 +1,51 @@
+﻿appId: com.capybara.lulu
+productName: 水豚噜噜
+directories:
+  output: dist
+  buildResources: resources
+
+# ============================================================
+# Windows 配置
+# ============================================================
+win:
+  target:
+    - target: portable
+      arch: [x64]
+  icon: resources/icon.ico
+  legalTrademarks: Capybara Lulu
+  publisherName: Capybara Lulu
+  requestedExecutionLevel: asInvoker
+
+portable:
+  artifactName: 水豚噜噜.exe
+
+# ============================================================
+# macOS 配置
+# ============================================================
+mac:
+  target:
+    - target: dmg
+      arch: [x64, arm64]
+  icon: resources/icon-mac.png
+  category: public.app-category.entertainment
+  hardenedRuntime: false
+  gatekeeperAssess: false
+
+dmg:
+  artifactName: 水豚噜噜-${arch}.dmg
+  title: 水豚噜噜 安装器
+  contents:
+    - { x: 130, y: 220 }
+    - { x: 410, y: 220, type: link, path: /Applications }
+
+# ============================================================
+# 通用配置
+# ============================================================
+files:
+  - out/main/**
+  - out/preload/**
+  - out/renderer/**
+
+compression: normal
+removePackageScripts: true
+removePackageKeywords: true
