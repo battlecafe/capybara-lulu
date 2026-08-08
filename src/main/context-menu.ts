@@ -38,6 +38,10 @@ function buildMenuTemplate(win?: BrowserWindow | null): Electron.MenuItemConstru
       click: (menuItem) => {
         noWalkRunEnabled = menuItem.checked
         win?.webContents.send(IPC_CHANNELS.TOGGLE_NO_WALK_RUN, noWalkRunEnabled)
+        // 确保 checkbox 点击后置顶状态恢复（Windows 上 checkbox 点击可能不触发 popup callback）
+        if (win) {
+          setTimeout(() => win.setAlwaysOnTop(true, 'screen-saver'), 50)
+        }
       },
     },
     { label: '隐藏', click: () => win?.hide() },
@@ -56,16 +60,29 @@ export function showPetContextMenu(win?: BrowserWindow | null): void {
   const menu = Menu.buildFromTemplate(buildMenuTemplate(win))
 
   if (win) {
-    win.setAlwaysOnTop(false)
     win.focus()
+  }
+
+  /** 恢复置顶状态 + 重置菜单标志 */
+  const restoreAlwaysOnTop = () => {
+    if (win) {
+      win.setAlwaysOnTop(true, 'screen-saver')
+    }
+    isMenuShowing = false
   }
 
   menu.popup({
     callback: () => {
-      if (win) {
-        win.setAlwaysOnTop(true, 'screen-saver')
-      }
-      isMenuShowing = false
+      // 使用 setTimeout 确保菜单完全关闭后再恢复（避免时序竞争）
+      setTimeout(restoreAlwaysOnTop, 50)
     },
   })
+
+  // 兜底：如果 callback 未触发（Windows 某些版本上 checkbox 点击后 callback 可能不调用），
+  // 3 秒后强制恢复置顶状态
+  setTimeout(() => {
+    if (isMenuShowing) {
+      restoreAlwaysOnTop()
+    }
+  }, 3000)
 }
