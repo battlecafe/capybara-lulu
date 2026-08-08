@@ -1,7 +1,7 @@
 ﻿import { Menu, BrowserWindow } from 'electron'
 import { IPC_CHANNELS } from '../shared/types'
 
-/** 禁止全屏幕走/跑动状态（模块级，菜单勾选保持） */
+/** 禁止跑动状态（模块级，菜单勾选保持） */
 let noWalkRunEnabled = false
 
 /**
@@ -32,7 +32,7 @@ function buildMenuTemplate(win?: BrowserWindow | null): Electron.MenuItemConstru
     // === 操作按钮 ===
     { type: 'separator' },
     {
-      label: '禁止全屏幕走/跑动（免打扰）',
+      label: '禁止跑动（免打扰）',
       type: 'checkbox',
       checked: noWalkRunEnabled,
       click: (menuItem) => {

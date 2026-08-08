@@ -19,7 +19,7 @@ const ACTION_DURATIONS: Record<string, number> = {
   heart: 2500,
 }
 
-/** 加权概率表（总和 100） */
+/** 加权概率表 — 正常模式（总和 100） */
 const ACTION_WEIGHTS: { action: NonNullable<IdleAction>, weight: number }[] = [
   { action: 'sleep',     weight: 25 },  // 最懒，概率最大
   { action: 'run',       weight: 10 },  // 跑动（合并了走路+奔跑）
@@ -30,10 +30,22 @@ const ACTION_WEIGHTS: { action: NonNullable<IdleAction>, weight: number }[] = [
   { action: 'heart',     weight: 13 },
 ]
 
+/** 加权概率表 — 免打扰模式（禁止跑动，总和 100） */
+const ACTION_WEIGHTS_NO_RUN: { action: NonNullable<IdleAction>, weight: number }[] = [
+  { action: 'sleep',     weight: 25 },  // 最懒，概率最大
+  { action: 'hula',      weight: 15 },
+  { action: 'eating',    weight: 15 },
+  { action: 'tangerine', weight: 15 },
+  { action: 'bath',      weight: 15 },
+  { action: 'heart',     weight: 15 },
+]
+
 /**
  * 行为AI — 5秒空闲后随机触发自动行为
- * 随机行为（加权概率）：跑动(10%)、扭呼啦圈(13%)、吃橘子(13%)、顶橘子(13%)、
- * 泡澡冥想(13%)、打哈欠睡觉30秒(25%)、粉色大爱心(13%)
+ * 正常模式：跑动(10%)、扭呼啦圈(13%)、吃橘子(13%)、顶橘子(13%)、
+ *           泡澡冥想(13%)、打哈欠睡觉30秒(25%)、粉色大爱心(13%)
+ * 免打扰模式（禁止跑动）：扭呼啦圈(15%)、吃橘子(15%)、顶橘子(15%)、
+ *           泡澡冥想(15%)、打哈欠睡觉30秒(25%)、粉色大爱心(15%)
  */
 export class BehaviorAI {
   private lastInteractionTime = Date.now()
@@ -43,6 +55,12 @@ export class BehaviorAI {
   private pendingSleep = false
   private sleepStartTime = 0
   private walkDirection: 1 | -1 = 1
+  private noWalkRun = false
+
+  /** 设置免打扰模式（禁止跑动） */
+  setNoWalkRun(enabled: boolean): void {
+    this.noWalkRun = enabled
+  }
 
   /** 记录用户交互（重置空闲计时器，取消当前行为） */
   onInteraction(): void {
@@ -116,11 +134,12 @@ export class BehaviorAI {
     const idleTime = Date.now() - this.lastInteractionTime
     if (idleTime < IDLE_TIMEOUT) return null
 
-    // 加权随机选择行为
-    const totalWeight = ACTION_WEIGHTS.reduce((sum, a) => sum + a.weight, 0)
+    // 加权随机选择行为（免打扰模式使用无跑动概率表）
+    const weights = this.noWalkRun ? ACTION_WEIGHTS_NO_RUN : ACTION_WEIGHTS
+    const totalWeight = weights.reduce((sum, a) => sum + a.weight, 0)
     let rand = Math.random() * totalWeight
     let action: NonNullable<IdleAction> = 'sleep'
-    for (const wa of ACTION_WEIGHTS) {
+    for (const wa of weights) {
       rand -= wa.weight
       if (rand <= 0) {
         action = wa.action

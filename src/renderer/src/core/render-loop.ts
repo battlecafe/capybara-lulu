@@ -376,10 +376,11 @@ class RenderLoopManager {
       this.handleMenuAction(action)
     })
 
-    // 禁止全屏幕走/跑动开关
+    // 禁止跑动开关
     windowBridge.onToggleNoWalkRun((enabled) => {
       this.noWalkRun = enabled
-      console.log(`%c[LULU] ${enabled ? '🔇' : '🔊'} 全屏幕走/跑动 ${enabled ? '已禁止' : '已恢复'}`, 'color:#9C27B0;font-weight:bold')
+      behaviorAI.setNoWalkRun(enabled)
+      console.log(`%c[LULU] ${enabled ? '🔇' : '🔊'} 跑动 ${enabled ? '已禁止' : '已恢复'}`, 'color:#9C27B0;font-weight:bold')
     })
   }
 
