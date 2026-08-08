@@ -94,8 +94,6 @@
 1. 从 [Releases](../../releases) 下载 `水豚噜噜.exe`（便携版，无需安装）
 2. 双击运行即可
 
-或使用启动脚本 `启动水豚噜噜.bat`（自动清理旧进程后启动）。
-
 ### macOS
 
 1. 从 [Releases](../../releases) 下载 `水豚噜噜-x64.zip`（Intel）或 `水豚噜噜-arm64.zip`（Apple Silicon）
